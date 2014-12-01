@@ -9,9 +9,11 @@ import java.util.Map;
 public class UserManager {
 
     private Map<String, User> users;
+    private Map<String, User> sessionTokens;
 
     public UserManager() {
         users = new HashMap<>();
+        sessionTokens = new HashMap<>();
     }
 
 
@@ -25,5 +27,15 @@ public class UserManager {
 
     public void addNewUser(String username, String password) {
         users.put(username, new User(username, password));
+    }
+
+    public String createSessionToken(String username) {
+        String sessionToken = System.currentTimeMillis() + username;
+        sessionTokens.put(sessionToken, getUser(username));
+        return sessionToken;
+    }
+
+    public User removeSessionToken(String sessionToken) {
+        return sessionTokens.remove(sessionToken);
     }
 }

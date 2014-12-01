@@ -1,11 +1,14 @@
 package alpacafarmerserver.method;
 
+import alpacafarmerserver.Util;
 import alpacafarmerserver.user.UserManager;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Created by ndh13 on 23/11/14.
  */
-public class CreateNewUser extends Method<Boolean> {
+public class CreateNewUser extends Method<JsonObject> {
 
     private final UserManager userManager;
     private final String username;
@@ -19,11 +22,23 @@ public class CreateNewUser extends Method<Boolean> {
     }
 
     @Override
-    public Boolean call() {
-        if (userManager.getUser(username) != null) {
-            return false;
+    public JsonObject call() {
+        JsonObject response = new JsonObject();
+        if (!Util.isAlphaNumeric(username) || !Util.isSuitableLength(username)) {
+            response.add("Success", new JsonPrimitive(false));
+            response.add("Error", new JsonPrimitive(0));
+            return response;
+        } else if (!Util.isAlphaNumeric(password) || !Util.isSuitableLength(password)) {
+            response.add("Success", new JsonPrimitive(false));
+            response.add("Error", new JsonPrimitive(1));
+            return response;
+        } else if (userManager.getUser(username) != null) {
+            response.add("Success", new JsonPrimitive(false));
+            response.add("Error", new JsonPrimitive(2));
+            return response;
         }
         userManager.addNewUser(username, password);
-        return true;
+        response.add("Success", new JsonPrimitive(true));
+        return response;
     }
 }
